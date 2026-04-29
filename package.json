@@ -1,0 +1,13 @@
+{
+  "name": "index-beautify",
+  "version": "1.0.0",
+  "description": "个人导航页面",
+  "main": "js/server.js",
+  "scripts": {
+    "start": "node js/server.js",
+    "dev": "node js/server.js"
+  },
+  "keywords": ["navigation", "personal"],
+  "author": "",
+  "license": "MIT"
+}

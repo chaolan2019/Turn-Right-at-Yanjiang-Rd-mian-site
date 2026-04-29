@@ -1,0 +1,2582 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>在路上，奔赴诗的山海</title>
+    
+    <!-- 标签页 favicon 配置 -->
+    <link rel="icon" href="../img/yanjiangrd-pixel.png" sizes="32x32" type="image/png">
+    <link rel="icon" href="../img/yanjiangrd-pixel.png" sizes="16x16" type="image/png">
+    <link rel="apple-touch-icon" href="../img/yanjiangrd-pixel.png">
+    
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --text-color: #212529;
+            --theme-color: #005cc5;
+            --theme-color-light: #0366d6;
+            --container-bg: #ffffff;
+            --font-family: "Microsoft YaHei", "Segoe UI", Helvetica, Arial, sans-serif;
+            --card-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            --transition: all 0.3s ease;
+            --a4-max-width: 595px;
+            --a4-max-height: 842px;
+            --bg-overlay-light: rgba(248, 249, 250, 0.6);
+            --bg-overlay-dark: rgba(21, 23, 26, 0.6);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #15171a;
+                --text-color: #e9ecef;
+                --theme-color: #1f6feb;
+                --theme-color-light: #388bfd;
+                --container-bg: #161b22;
+                --card-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            }
+        }
+
+        /* ========== 背景层样式 ========== */
+        .bg-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background-color: var(--bg-color);
+        }
+
+        .bg-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            filter: blur(20px);
+            transform: scale(1.1);
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+        }
+
+        .bg-image.loaded {
+            opacity: 1;
+        }
+
+        .bg-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-overlay-light);
+            transition: background-color 0.5s ease;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .bg-overlay {
+                background-color: var(--bg-overlay-dark);
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-family);
+            min-height: 100vh;
+            transition: var(--transition);
+        }
+
+        .main-container {
+            min-height: 100vh;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        .header-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            margin-bottom: 40px;
+        }
+
+        .site-title {
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-weight: 700;
+            text-align: center;
+            color: var(--text-color);
+            letter-spacing: 0.05em;
+        }
+
+        .first-poem-entry {
+            text-align: center;
+            color: var(--text-color);
+            opacity: 0.7;
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
+            cursor: pointer;
+            transition: var(--transition);
+            padding: 8px 16px;
+            border-radius: 8px;
+            margin-top: 8px;
+        }
+
+        .first-poem-entry:hover {
+            opacity: 1;
+            background: rgba(0, 92, 197, 0.1);
+        }
+
+        .nav-cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            max-width: 1100px;
+            width: 100%;
+            height: 45vh;
+            max-height: 400px;
+            padding: 0 10px;
+            min-height: 0;
+        }
+
+        .nav-card {
+            background: var(--container-bg);
+            border: 1px solid #e1e4e8;
+            border-radius: 12px;
+            padding: 24px 16px;
+            text-decoration: none;
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            width: 100%;
+            height: 100%;
+            min-height: 0;
+        }
+
+        .nav-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--theme-color), var(--theme-color-light));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .nav-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 32px rgba(0, 92, 197, 0.15);
+            border-color: var(--theme-color);
+        }
+
+        .nav-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .nav-card-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--theme-color), var(--theme-color-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0, 92, 197, 0.25);
+        }
+
+        .nav-card-icon svg {
+            width: 32px;
+            height: 32px;
+            color: white;
+            stroke-width: 2;
+        }
+
+        .nav-card-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .nav-card {
+                border-color: #30363d;
+            }
+        }
+
+        .poem-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .poem-modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .poem-card {
+            width: var(--a4-max-width);
+            max-width: 95vw;
+            height: var(--a4-max-height);
+            max-height: 90vh;
+            background: var(--container-bg);
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            transform: translateY(30px) scale(0.95);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        .poem-modal-overlay.active .poem-card {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+
+        .poem-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            flex-shrink: 0;
+        }
+
+        .poem-card-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-color);
+            opacity: 0.6;
+            transition: var(--transition);
+        }
+
+        .poem-card-close:hover {
+            background: rgba(0, 0, 0, 0.05);
+            opacity: 1;
+        }
+
+        .poem-card-close svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .poem-card-chapter {
+            font-size: 0.85rem;
+            color: var(--theme-color);
+            font-weight: 600;
+        }
+
+        .poem-card-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 32px 40px;
+            line-height: 1.9;
+            font-size: 1rem;
+        }
+
+        .poem-card-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .poem-card-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .poem-card-content::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 3px;
+        }
+
+        .poem-number {
+            font-size: 0.9rem;
+            color: var(--theme-color);
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .poem-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: var(--text-color);
+        }
+
+        .poem-body {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .poem-body h2 {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin: 24px 0 16px 0;
+            color: var(--theme-color);
+        }
+
+        .poem-body strong {
+            font-weight: 600;
+        }
+
+        .poem-body hr {
+            border: none;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            margin: 24px 0;
+        }
+
+        .poem-meta {
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(0, 0, 0, 0.08);
+            font-size: 0.85rem;
+            color: var(--text-color);
+            opacity: 0.6;
+        }
+
+        .poem-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            border-top: 1px solid rgba(0, 0, 0, 0.08);
+            flex-shrink: 0;
+        }
+
+        .poem-nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: var(--theme-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .poem-nav-btn:hover {
+            background: var(--theme-color-light);
+            transform: translateY(-2px);
+        }
+
+        .poem-nav-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .poem-nav-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .poem-page-info {
+            font-size: 0.9rem;
+            color: var(--text-color);
+            opacity: 0.7;
+        }
+
+        .add-poem-btn {
+            position: fixed;
+            bottom: 32px;
+            right: 32px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--theme-color), var(--theme-color-light));
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 16px rgba(0, 92, 197, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 999;
+        }
+
+        .add-poem-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 24px rgba(0, 92, 197, 0.5);
+        }
+
+        .add-poem-btn svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        .add-poem-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1001;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .add-poem-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .add-poem-card {
+            width: var(--a4-max-width);
+            max-width: 95vw;
+            height: var(--a4-max-height);
+            max-height: 90vh;
+            background: var(--container-bg);
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            transform: translateY(30px) scale(0.95);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        .add-poem-modal.active .add-poem-card {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+
+        .add-poem-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            flex-shrink: 0;
+            gap: 12px;
+        }
+
+        .add-poem-header h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .add-poem-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-color);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e1e4e8;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            background: var(--container-bg);
+            color: var(--text-color);
+            transition: all 0.2s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--theme-color);
+            box-shadow: 0 0 0 3px rgba(0, 92, 197, 0.1);
+        }
+
+        .form-group textarea {
+            min-height: 200px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        .form-hint {
+            font-size: 0.8rem;
+            color: var(--text-color);
+            opacity: 0.5;
+            margin-top: 6px;
+        }
+
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 36px;
+            cursor: pointer;
+        }
+
+        .form-input-header {
+            padding: 10px 14px;
+            border: 1px solid #e1e4e8;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            background: var(--container-bg);
+            color: var(--text-color);
+            transition: all 0.2s ease;
+            height: 40px;
+            box-sizing: border-box;
+        }
+
+        .form-input-header:focus {
+            outline: none;
+            border-color: var(--theme-color);
+            box-shadow: 0 0 0 3px rgba(0, 92, 197, 0.1);
+        }
+
+        .form-select-header {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 12px;
+            padding-right: 32px;
+            cursor: pointer;
+            min-width: 130px;
+        }
+
+        .form-select-header:hover {
+            border-color: var(--theme-color);
+        }
+
+        .form-select-wrapper {
+            position: relative;
+            min-width: 130px;
+        }
+
+        .form-select-trigger {
+            padding: 10px 32px 10px 14px;
+            border: 1px solid #e1e4e8;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            background: var(--container-bg);
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            user-select: none;
+            height: 40px;
+            box-sizing: border-box;
+        }
+
+        .form-select-trigger:hover {
+            border-color: var(--theme-color);
+        }
+
+        .form-select-trigger:focus {
+            outline: none;
+            border-color: var(--theme-color);
+            box-shadow: 0 0 0 3px rgba(0, 92, 197, 0.1);
+        }
+
+        .form-select-trigger::after {
+            content: '';
+            position: absolute;
+            right: 12px;
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 5px solid #666;
+            pointer-events: none;
+        }
+
+        .form-select-dropdown {
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            right: 0;
+            background: var(--container-bg);
+            border: 1px solid #e1e4e8;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-8px);
+            transition: all 0.2s ease;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .form-select-wrapper.open .form-select-dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .form-select-option {
+            padding: 10px 14px;
+            cursor: pointer;
+            transition: background 0.15s ease;
+            font-size: 0.9rem;
+        }
+
+        .form-select-option:hover {
+            background: rgba(0, 92, 197, 0.08);
+        }
+
+        .form-select-option.selected {
+            background: rgba(0, 92, 197, 0.12);
+            color: var(--theme-color);
+            font-weight: 500;
+        }
+
+        .form-input-small {
+            padding: 10px 12px;
+            border: 1px solid #e1e4e8;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            background: var(--container-bg);
+            color: var(--text-color);
+            transition: all 0.2s ease;
+            width: 60px;
+            text-align: center;
+            height: 40px;
+            box-sizing: border-box;
+            -moz-appearance: textfield;
+        }
+
+        .form-input-small::-webkit-outer-spin-button,
+        .form-input-small::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .form-input-small:focus {
+            outline: none;
+            border-color: var(--theme-color);
+            box-shadow: 0 0 0 3px rgba(0, 92, 197, 0.1);
+        }
+
+        .form-input-small::placeholder {
+            color: var(--text-color);
+            opacity: 0.4;
+        }
+
+        .form-input-footer {
+            padding: 8px 14px;
+            border: 1px solid #e1e4e8;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            background: var(--container-bg);
+            color: var(--text-color);
+            transition: all 0.2s ease;
+            width: 100px;
+        }
+
+        .form-input-footer:focus {
+            outline: none;
+            border-color: var(--theme-color);
+            box-shadow: 0 0 0 3px rgba(0, 92, 197, 0.1);
+        }
+
+        .form-input-footer::placeholder {
+            color: var(--text-color);
+            opacity: 0.4;
+        }
+
+        .poem-textarea {
+            width: 100%;
+            height: 100%;
+            min-height: 450px;
+            border: none;
+            background: transparent;
+            font-size: 1rem;
+            line-height: 2;
+            resize: none;
+            outline: none;
+            font-family: inherit;
+            color: var(--text-color);
+        }
+
+        .poem-textarea::placeholder {
+            color: var(--text-color);
+            opacity: 0.35;
+            line-height: 2;
+        }
+
+        .add-poem-footer {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 24px;
+            border-top: 1px solid rgba(0, 0, 0, 0.08);
+            flex-shrink: 0;
+        }
+
+        .btn {
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--theme-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--theme-color-light);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid #e1e4e8;
+            color: var(--text-color);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: var(--text-color);
+            color: var(--bg-color);
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 2000;
+        }
+
+        .toast.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--text-color);
+            opacity: 0.5;
+            font-size: 1rem;
+        }
+
+        /* ========== 管理员登录弹窗样式 ========== */
+        .admin-login-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10010;
+            backdrop-filter: blur(4px);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .admin-login-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .admin-login-card {
+            background: var(--container-bg);
+            padding: 32px;
+            border-radius: 16px;
+            width: 360px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            transform: translateY(-20px) scale(0.95);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .admin-login-modal.active .admin-login-card {
+            transform: translateY(0) scale(1);
+        }
+
+        .admin-login-card h4 {
+            margin: 0 0 8px 0;
+            color: var(--text-color);
+            font-size: 1.4rem;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .admin-login-subtitle {
+            text-align: center;
+            color: var(--text-color);
+            opacity: 0.5;
+            font-size: 0.85rem;
+            margin-bottom: 28px;
+        }
+
+        .admin-login-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #e1e4e8;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            margin-bottom: 14px;
+            box-sizing: border-box;
+            background: var(--container-bg);
+            color: var(--text-color);
+            transition: all 0.2s ease;
+        }
+
+        .admin-login-input:focus {
+            outline: none;
+            border-color: var(--theme-color);
+            box-shadow: 0 0 0 4px rgba(0, 92, 197, 0.1);
+        }
+
+        .admin-login-input::placeholder {
+            color: var(--text-color);
+            opacity: 0.35;
+        }
+
+        .admin-login-error {
+            color: #ff4757;
+            font-size: 0.85rem;
+            margin-bottom: 14px;
+            min-height: 18px;
+            display: none;
+            text-align: center;
+            background: rgba(255, 71, 87, 0.1);
+            padding: 8px 12px;
+            border-radius: 8px;
+        }
+
+        .admin-login-btns {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        /* ========== 管理诗篇弹窗样式 ========== */
+        .manage-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1005;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .manage-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .manage-card {
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            background: var(--container-bg);
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            transform: translateY(30px) scale(0.95);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+        }
+
+        .manage-modal.active .manage-card {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+
+        .manage-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+            flex-shrink: 0;
+        }
+
+        .manage-header h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .manage-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 24px;
+        }
+
+        .manage-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            padding: 20px 24px;
+            border-top: 1px solid rgba(0, 0, 0, 0.06);
+            flex-shrink: 0;
+        }
+
+        /* 管理列表项样式 */
+        .manage-list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 18px;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            background: var(--container-bg);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .manage-list-item:hover {
+            border-color: var(--theme-color);
+            box-shadow: 0 4px 12px rgba(0, 92, 197, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .manage-list-item-info {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex: 1;
+        }
+
+        .manage-list-item-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--theme-color), var(--theme-color-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(0, 92, 197, 0.25);
+        }
+
+        .manage-list-item-icon svg {
+            width: 22px;
+            height: 22px;
+            color: white;
+        }
+
+        .manage-list-item-text {
+            flex: 1;
+        }
+
+        .manage-list-item-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 4px;
+        }
+
+        .manage-list-item-desc {
+            font-size: 0.8rem;
+            color: var(--text-color);
+            opacity: 0.5;
+        }
+
+        .manage-list-item-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .manage-action-btn {
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            font-weight: 500;
+        }
+
+        .manage-edit-btn {
+            background: rgba(0, 92, 197, 0.1);
+            color: var(--theme-color);
+        }
+
+        .manage-edit-btn:hover {
+            background: rgba(0, 92, 197, 0.18);
+        }
+
+        .manage-delete-btn {
+            background: rgba(255, 71, 87, 0.1);
+            color: #ff4757;
+        }
+
+        .manage-delete-btn:hover {
+            background: rgba(255, 71, 87, 0.18);
+        }
+
+        /* 删除确认框 */
+        .delete-confirm-box {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 8px;
+            background: var(--container-bg);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 10px;
+            padding: 12px 14px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-5px);
+            transition: all 0.2s ease;
+            z-index: 100;
+        }
+
+        .delete-confirm-box.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .delete-confirm-yes,
+        .delete-confirm-no {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.15s ease;
+            font-weight: 500;
+        }
+
+        .delete-confirm-yes {
+            background: #ff4757;
+            color: white;
+        }
+
+        .delete-confirm-yes:hover {
+            background: #ff3344;
+        }
+
+        .delete-confirm-no {
+            background: #f1f3f5;
+            color: #666;
+        }
+
+        .delete-confirm-no:hover {
+            background: #e9ecef;
+        }
+
+        .delete-wrapper {
+            position: relative;
+        }
+
+        /* 返回按钮 */
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 16px;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 10px;
+            background: transparent;
+            color: var(--text-color);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .back-btn:hover {
+            background: rgba(0, 0, 0, 0.04);
+            border-color: var(--theme-color);
+            color: var(--theme-color);
+        }
+
+        .back-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* 管理按钮样式 */
+        .manage-poems-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 10px;
+            background: transparent;
+            color: var(--text-color);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .manage-poems-btn:hover {
+            background: rgba(0, 92, 197, 0.08);
+            border-color: var(--theme-color);
+            color: var(--theme-color);
+        }
+
+        .manage-poems-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+
+        .chapter-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            border-radius: 8px;
+        }
+
+        .chapter-item:hover {
+            background: rgba(0, 92, 197, 0.05);
+        }
+
+        .chapter-item:hover .nav-card-icon {
+            transform: scale(1.05);
+        }
+
+        .chapter-item .nav-card-icon {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 28px;
+        }
+
+        .chapter-item .nav-card-icon svg {
+            width: 50px;
+            height: 50px;
+        }
+
+        .chapter-item .chapter-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        @media (max-width: 1200px) {
+            .nav-cards {
+                grid-template-columns: repeat(2, 1fr);
+                grid-template-rows: repeat(2, 1fr);
+                max-width: 700px;
+            }
+            
+            .nav-card {
+                aspect-ratio: 595 / 842;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 16px;
+            }
+            
+            .header-section {
+                flex: 0 0 auto;
+                padding: 20px 0;
+            }
+            
+            .site-title {
+                font-size: 1.5rem;
+            }
+
+            .first-poem-entry {
+                font-size: 0.9rem;
+            }
+
+            .nav-cards {
+                grid-template-columns: repeat(2, 1fr);
+                grid-template-rows: repeat(2, 1fr);
+                gap: 10px;
+                flex: 1;
+                min-height: 0;
+            }
+
+            .nav-card {
+                aspect-ratio: 595 / 842;
+                padding: 16px 12px;
+            }
+            
+            .nav-card-icon {
+                width: 48px;
+                height: 48px;
+                margin-bottom: 12px;
+            }
+            
+            .nav-card-icon svg {
+                width: 24px;
+                height: 24px;
+            }
+            
+            .nav-card-title {
+                font-size: 1rem;
+            }
+
+            .poem-card-content {
+                padding: 24px;
+            }
+
+            .add-poem-btn {
+                width: 48px;
+                height: 48px;
+                bottom: 20px;
+                right: 20px;
+            }
+
+            .add-poem-btn svg {
+                width: 24px;
+                height: 24px;
+            }
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .poem-card-header,
+            .poem-card-footer,
+            .add-poem-header,
+            .add-poem-footer,
+            .manage-header,
+            .manage-footer,
+            .admin-login-card {
+                border-color: rgba(255, 255, 255, 0.08);
+            }
+
+            .form-group input,
+            .form-group select,
+            .form-group textarea,
+            .form-input-header,
+            .form-input-footer,
+            .form-input-small,
+            .form-select-trigger,
+            .form-select-dropdown,
+            .admin-login-input,
+            .manage-list-item,
+            .back-btn,
+            .manage-poems-btn {
+                border-color: #30363d;
+            }
+
+            .form-select-trigger::after {
+                border-top-color: #aaa;
+            }
+
+            .form-select-dropdown,
+            .delete-confirm-box {
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            }
+
+            .form-select,
+            .form-select-header {
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23aaa' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            }
+
+            .btn-secondary,
+            .back-btn,
+            .manage-poems-btn {
+                border-color: #30363d;
+            }
+
+            .btn-secondary:hover,
+            .back-btn:hover,
+            .manage-poems-btn:hover {
+                background: rgba(255, 255, 255, 0.05);
+            }
+
+            .manage-list-item {
+                background: rgba(255, 255, 255, 0.02);
+            }
+
+            .manage-list-item:hover {
+                background: rgba(255, 255, 255, 0.05);
+            }
+
+            .delete-confirm-no {
+                background: #30363d;
+                color: #aaa;
+            }
+
+            .delete-confirm-no:hover {
+                background: #3d4450;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-layer">
+        <div class="bg-image" id="bgImage"></div>
+        <div class="bg-overlay"></div>
+    </div>
+    <div class="main-container">
+        <div class="header-section">
+            <h1 class="site-title" id="siteTitle">在路上，奔赴诗的山海</h1>
+            <div class="first-poem-entry" id="firstPoemEntry">
+                感谢观赏，首张诗篇，在此献上
+            </div>
+        </div>
+        <div class="nav-cards" id="navCards"></div>
+    </div>
+
+    <div class="poem-modal-overlay" id="poemModal">
+        <div class="poem-card">
+            <div class="poem-card-header">
+                <span class="poem-card-chapter" id="poemChapter"></span>
+                <button class="poem-card-close" id="poemClose">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="poem-card-content" id="poemContent"></div>
+            <div class="poem-card-footer" id="poemFooter"></div>
+        </div>
+    </div>
+
+    <button class="add-poem-btn" id="addPoemBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+    </button>
+
+    <div class="add-poem-modal" id="addPoemModal">
+        <div class="add-poem-card">
+            <div class="add-poem-header" id="addPoemHeader"></div>
+            <div class="add-poem-body" id="addPoemBody"></div>
+            <div class="add-poem-footer" id="addPoemFooter"></div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <!-- 管理员登录弹窗 -->
+    <div class="admin-login-modal" id="adminLoginModal">
+        <div class="admin-login-card">
+            <h4>管理员登录</h4>
+            <div class="admin-login-subtitle">请输入管理员账号和密码</div>
+            <input type="text" id="adminUsernameInput" placeholder="用户名" class="admin-login-input">
+            <input type="password" id="adminPasswordInput" placeholder="密码" class="admin-login-input">
+            <div class="admin-login-error" id="adminLoginError"></div>
+            <div class="admin-login-btns">
+                <button class="btn btn-secondary" id="adminLoginCancel">取消</button>
+                <button class="btn btn-primary" id="adminLoginConfirm">登录</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 管理诗篇弹窗 -->
+    <div class="manage-modal" id="manageModal">
+        <div class="manage-card">
+            <div class="manage-header">
+                <button class="back-btn" id="manageBackBtn" style="display:none;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                    返回
+                </button>
+                <h3 id="manageTitle">管理诗篇</h3>
+                <button class="poem-card-close" id="manageClose">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="manage-body" id="manageBody"></div>
+            <div class="manage-footer" id="manageFooter"></div>
+        </div>
+    </div>
+
+    <script>
+        let poemsData = null;
+        let currentChapterId = null;
+        let currentPoemIndex = 0;
+        let chapterPoems = [];
+        let isMoreChaptersMode = false;
+        let moreChaptersList = [];
+        let currentChapterIndex = 0;
+        let isAdminLoggedIn = false;
+        let adminCredentials = { username: '', password: '' };
+        let manageViewMode = 'chapters'; // 'chapters' or 'poems'
+        let selectedManageChapterId = null;
+
+        function getApiBaseUrl() {
+            const { origin, pathname, hostname, port } = window.location;
+
+            // 反向代理到子路径时，API 也走相同前缀。
+            if (pathname.startsWith('/lanpoetry/')) {
+                return '/lanpoetry';
+            }
+
+            // 本地开发或直连 3002 端口时，直接请求当前源。
+            if (hostname === 'localhost' || hostname === '127.0.0.1' || port === '3002') {
+                return origin;
+            }
+
+            // 默认按同源根路径访问（如独立子域映射到诗歌服务）。
+            return '';
+        }
+
+        /* ========== 管理员登录功能 ========== */
+        function showAdminLoginModal() {
+            const modal = document.getElementById('adminLoginModal');
+            const errorEl = document.getElementById('adminLoginError');
+            const usernameInput = document.getElementById('adminUsernameInput');
+            const passwordInput = document.getElementById('adminPasswordInput');
+            
+            modal.classList.add('active');
+            errorEl.style.display = 'none';
+            
+            const savedUsername = localStorage.getItem('adminUsername') || '';
+            usernameInput.value = savedUsername;
+            passwordInput.value = '';
+            
+            if (savedUsername) {
+                passwordInput.focus();
+            } else {
+                usernameInput.focus();
+            }
+        }
+
+        function hideAdminLoginModal() {
+            document.getElementById('adminLoginModal').classList.remove('active');
+        }
+
+        async function verifyAdminLogin(username, password) {
+            try {
+                const response = await fetch(getApiBaseUrl() + '/json/admin.json');
+                const adminData = await response.json();
+                return adminData.username === username && adminData.password === password;
+            } catch (error) {
+                console.error('验证管理员失败:', error);
+                return false;
+            }
+        }
+
+        function initAdminLoginEvents() {
+            const modal = document.getElementById('adminLoginModal');
+            const cancelBtn = document.getElementById('adminLoginCancel');
+            const confirmBtn = document.getElementById('adminLoginConfirm');
+            const usernameInput = document.getElementById('adminUsernameInput');
+            const passwordInput = document.getElementById('adminPasswordInput');
+            const errorEl = document.getElementById('adminLoginError');
+
+            cancelBtn.addEventListener('click', hideAdminLoginModal);
+            
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) hideAdminLoginModal();
+            });
+
+            const doLogin = async () => {
+                const username = usernameInput.value.trim();
+                const password = passwordInput.value.trim();
+
+                if (!username || !password) {
+                    errorEl.textContent = '请填写用户名和密码';
+                    errorEl.style.display = 'block';
+                    return;
+                }
+
+                confirmBtn.disabled = true;
+                confirmBtn.textContent = '验证中...';
+
+                const isValid = await verifyAdminLogin(username, password);
+
+                if (isValid) {
+                    isAdminLoggedIn = true;
+                    adminCredentials = { username, password };
+                    localStorage.setItem('adminUsername', username);
+                    hideAdminLoginModal();
+                    showAddPoemModal();
+                } else {
+                    errorEl.textContent = '用户名或密码错误';
+                    errorEl.style.display = 'block';
+                    confirmBtn.disabled = false;
+                    confirmBtn.textContent = '登录';
+                }
+            };
+
+            confirmBtn.addEventListener('click', doLogin);
+            
+            const handleEnter = (e) => {
+                if (e.key === 'Enter') doLogin();
+            };
+            usernameInput.addEventListener('keydown', handleEnter);
+            passwordInput.addEventListener('keydown', handleEnter);
+        }
+
+        /* ========== 管理诗篇功能 ========== */
+        function showManageModal() {
+            manageViewMode = 'chapters';
+            selectedManageChapterId = null;
+            renderManageChapters();
+            document.getElementById('manageModal').classList.add('active');
+        }
+
+        function hideManageModal() {
+            document.getElementById('manageModal').classList.remove('active');
+        }
+
+        function renderManageChapters() {
+            const backBtn = document.getElementById('manageBackBtn');
+            const title = document.getElementById('manageTitle');
+            const body = document.getElementById('manageBody');
+            const footer = document.getElementById('manageFooter');
+
+            backBtn.style.display = 'none';
+            title.textContent = '管理诗篇';
+            footer.innerHTML = `
+                <button class="btn btn-primary" id="addChapterInManage">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;margin-right:6px;">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    新建章节
+                </button>
+                <button class="btn btn-secondary" onclick="hideManageModal()">关闭</button>
+            `;
+
+            const chapters = poemsData.chapters.filter(c => c.id !== 0);
+            
+            body.innerHTML = chapters.map(chapter => {
+                const poemCount = poemsData.poems.filter(p => p.chapterId === chapter.id).length;
+                return `
+                    <div class="manage-list-item" data-chapter="${chapter.id}">
+                        <div class="manage-list-item-info">
+                            <div class="manage-list-item-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                                </svg>
+                            </div>
+                            <div class="manage-list-item-text">
+                                <div class="manage-list-item-title">${chapter.title}</div>
+                                <div class="manage-list-item-desc">${poemCount} 首诗篇</div>
+                            </div>
+                        </div>
+                        <div class="manage-list-item-actions">
+                            <button class="manage-action-btn manage-edit-btn" onclick="event.stopPropagation(); editChapter(${chapter.id})">编辑标题</button>
+                            <div class="delete-wrapper">
+                                <button class="manage-action-btn manage-delete-btn" onclick="event.stopPropagation(); toggleDeleteConfirm(this)">删除</button>
+                                <div class="delete-confirm-box">
+                                    <span>确认删除?</span>
+                                    <button class="delete-confirm-yes" onclick="event.stopPropagation(); deleteChapter(${chapter.id})">确定</button>
+                                    <button class="delete-confirm-no" onclick="event.stopPropagation(); hideDeleteConfirm(this)">取消</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // 点击章节进入诗篇列表
+            body.querySelectorAll('.manage-list-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const chapterId = parseInt(item.dataset.chapter);
+                    showManagePoems(chapterId);
+                });
+            });
+
+            // 新建章节按钮
+            document.getElementById('addChapterInManage').addEventListener('click', showAddChapterInManage);
+        }
+
+        function showAddChapterInManage() {
+            const body = document.getElementById('manageBody');
+            const footer = document.getElementById('manageFooter');
+            const backBtn = document.getElementById('manageBackBtn');
+            const title = document.getElementById('manageTitle');
+
+            backBtn.style.display = 'flex';
+            title.textContent = '新建章节';
+
+            body.innerHTML = `
+                <div class="form-group">
+                    <label>章节标题</label>
+                    <input type="text" id="newChapterTitle" placeholder="如：肆 · 新的篇章" class="form-input-header" style="width:100%;">
+                </div>
+                <div class="form-group">
+                    <label>章节描述</label>
+                    <input type="text" id="newChapterDesc" placeholder="简短描述" class="form-input-header" style="width:100%;">
+                </div>
+            `;
+
+            footer.innerHTML = `
+                <button class="btn btn-secondary" onclick="renderManageChapters()">取消</button>
+                <button class="btn btn-primary" id="saveNewChapterBtn">保存章节</button>
+            `;
+
+            document.getElementById('saveNewChapterBtn').addEventListener('click', async () => {
+                const title = document.getElementById('newChapterTitle').value.trim();
+                const description = document.getElementById('newChapterDesc').value.trim();
+
+                if (!title) {
+                    showToast('请填写章节标题');
+                    return;
+                }
+
+                const submitBtn = document.getElementById('saveNewChapterBtn');
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="loading-spinner"></span>';
+
+                try {
+                    const response = await fetch(getApiBaseUrl() + '/api/chapters', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ title, description })
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        showToast('章节创建成功');
+                        await loadData();
+                        renderManageChapters();
+                    } else {
+                        showToast(result.error || '创建失败');
+                    }
+                } catch (error) {
+                    console.error('创建失败:', error);
+                    showToast('创建失败，请检查服务器连接');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '保存章节';
+                }
+            });
+        }
+
+        function showManagePoems(chapterId) {
+            manageViewMode = 'poems';
+            selectedManageChapterId = chapterId;
+            
+            const chapter = poemsData.chapters.find(c => c.id === chapterId);
+            const poems = poemsData.poems.filter(p => p.chapterId === chapterId);
+            const backBtn = document.getElementById('manageBackBtn');
+            const title = document.getElementById('manageTitle');
+            const body = document.getElementById('manageBody');
+            const footer = document.getElementById('manageFooter');
+
+            backBtn.style.display = 'flex';
+            title.textContent = chapter.title;
+
+            if (poems.length === 0) {
+                body.innerHTML = '<div class="empty-state">该章节暂无诗篇</div>';
+            } else {
+                body.innerHTML = poems.map(poem => `
+                    <div class="manage-list-item">
+                        <div class="manage-list-item-info">
+                            <div class="manage-list-item-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                                </svg>
+                            </div>
+                            <div class="manage-list-item-text">
+                                <div class="manage-list-item-title">#${poem.number} ${poem.title}</div>
+                                <div class="manage-list-item-desc">${poem.date || '无日期'}</div>
+                            </div>
+                        </div>
+                        <div class="manage-list-item-actions">
+                            <button class="manage-action-btn manage-edit-btn" onclick="event.stopPropagation(); editPoem(${poem.id})">编辑内容</button>
+                            <div class="delete-wrapper">
+                                <button class="manage-action-btn manage-delete-btn" onclick="event.stopPropagation(); toggleDeleteConfirm(this)">删除</button>
+                                <div class="delete-confirm-box">
+                                    <span>确认删除?</span>
+                                    <button class="delete-confirm-yes" onclick="event.stopPropagation(); deletePoem(${poem.id})">确定</button>
+                                    <button class="delete-confirm-no" onclick="event.stopPropagation(); hideDeleteConfirm(this)">取消</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            footer.innerHTML = '<button class="btn btn-secondary" onclick="hideManageModal()">关闭</button>';
+        }
+
+        function toggleDeleteConfirm(btn) {
+            const wrapper = btn.closest('.delete-wrapper');
+            const confirmBox = wrapper.querySelector('.delete-confirm-box');
+            
+            // 隐藏其他确认框
+            document.querySelectorAll('.delete-confirm-box.show').forEach(box => {
+                if (box !== confirmBox) box.classList.remove('show');
+            });
+            
+            confirmBox.classList.toggle('show');
+        }
+
+        function hideDeleteConfirm(btn) {
+            btn.closest('.delete-confirm-box').classList.remove('show');
+        }
+
+        async function deleteChapter(chapterId) {
+            try {
+                const response = await fetch(getApiBaseUrl() + '/api/chapters/delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: chapterId, ...adminCredentials })
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    showToast('章节删除成功');
+                    await loadData();
+                    renderManageChapters();
+                } else {
+                    showToast(result.error || '删除失败');
+                }
+            } catch (error) {
+                showToast('删除失败');
+            }
+        }
+
+        async function deletePoem(poemId) {
+            try {
+                const response = await fetch(getApiBaseUrl() + '/api/poems/delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: poemId, ...adminCredentials })
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    showToast('诗篇删除成功');
+                    await loadData();
+                    showManagePoems(selectedManageChapterId);
+                } else {
+                    showToast(result.error || '删除失败');
+                }
+            } catch (error) {
+                showToast('删除失败');
+            }
+        }
+
+        function editChapter(chapterId) {
+            const chapter = poemsData.chapters.find(c => c.id === chapterId);
+            const body = document.getElementById('manageBody');
+            const footer = document.getElementById('manageFooter');
+            const backBtn = document.getElementById('manageBackBtn');
+            const title = document.getElementById('manageTitle');
+
+            backBtn.style.display = 'flex';
+            title.textContent = '编辑章节';
+
+            body.innerHTML = `
+                <div class="form-group">
+                    <label>章节标题</label>
+                    <input type="text" id="editChapterTitle" value="${chapter.title}" class="form-input-header" style="width:100%;">
+                </div>
+                <div class="form-group">
+                    <label>章节描述</label>
+                    <input type="text" id="editChapterDesc" value="${chapter.description || ''}" class="form-input-header" style="width:100%;">
+                </div>
+            `;
+
+            footer.innerHTML = `
+                <button class="btn btn-secondary" onclick="renderManageChapters()">取消</button>
+                <button class="btn btn-primary" id="saveChapterBtn">保存</button>
+            `;
+
+            document.getElementById('saveChapterBtn').addEventListener('click', async () => {
+                const newTitle = document.getElementById('editChapterTitle').value.trim();
+                const newDesc = document.getElementById('editChapterDesc').value.trim();
+
+                if (!newTitle) {
+                    showToast('请填写章节标题');
+                    return;
+                }
+
+                try {
+                    const response = await fetch(getApiBaseUrl() + '/api/chapters/edit', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id: chapterId, title: newTitle, description: newDesc, ...adminCredentials })
+                    });
+                    const result = await response.json();
+
+                    if (result.success) {
+                        showToast('章节更新成功');
+                        await loadData();
+                        renderManageChapters();
+                    } else {
+                        showToast(result.error || '更新失败');
+                    }
+                } catch (error) {
+                    showToast('更新失败');
+                }
+            });
+        }
+
+        function editPoem(poemId) {
+            const poem = poemsData.poems.find(p => p.id === poemId);
+            const body = document.getElementById('manageBody');
+            const footer = document.getElementById('manageFooter');
+            const backBtn = document.getElementById('manageBackBtn');
+            const title = document.getElementById('manageTitle');
+
+            backBtn.style.display = 'flex';
+            title.textContent = '编辑诗篇';
+
+            const chapters = poemsData.chapters.filter(c => c.id !== 0);
+            const chapterOptionsHtml = chapters.map(c => 
+                `<div class="form-select-option ${c.id === poem.chapterId ? 'selected' : ''}" data-value="${c.id}">${c.title}</div>`
+            ).join('');
+
+            body.innerHTML = `
+                <div style="display:flex;gap:12px;margin-bottom:16px;align-items:center;">
+                    <div class="form-select-wrapper" id="editPoemChapterWrapper">
+                        <div class="form-select-trigger" tabindex="0" id="editPoemChapterTrigger">${chapters.find(c => c.id === poem.chapterId)?.title || '选择章节'}</div>
+                        <input type="hidden" id="editPoemChapter" value="${poem.chapterId}">
+                        <div class="form-select-dropdown">${chapterOptionsHtml}</div>
+                    </div>
+                    <input type="number" id="editPoemNumber" placeholder="#" class="form-input-small" value="${poem.number || ''}">
+                    <input type="text" id="editPoemTitle" placeholder="诗篇标题" class="form-input-header" style="flex:1;font-weight:600;" value="${poem.title}">
+                </div>
+                <textarea id="editPoemContent" class="poem-textarea" placeholder="诗篇内容">${poem.content}</textarea>
+                <div style="display:flex;gap:12px;margin-top:16px;">
+                    <input type="text" id="editPoemDate" placeholder="日期" class="form-input-footer" style="flex:1;" value="${poem.date || ''}">
+                    <input type="text" id="editPoemNote" placeholder="备注" class="form-input-footer" style="flex:1;" value="${poem.note || ''}">
+                </div>
+            `;
+
+            // 初始化下拉选择框
+            const wrapper = document.getElementById('editPoemChapterWrapper');
+            const trigger = document.getElementById('editPoemChapterTrigger');
+            const hiddenInput = document.getElementById('editPoemChapter');
+            
+            trigger.addEventListener('click', () => wrapper.classList.toggle('open'));
+            wrapper.querySelectorAll('.form-select-option').forEach(option => {
+                option.addEventListener('click', () => {
+                    wrapper.querySelectorAll('.form-select-option').forEach(o => o.classList.remove('selected'));
+                    option.classList.add('selected');
+                    trigger.textContent = option.textContent;
+                    hiddenInput.value = option.dataset.value;
+                    wrapper.classList.remove('open');
+                });
+            });
+
+            footer.innerHTML = `
+                <button class="btn btn-secondary" onclick="showManagePoems(${poem.chapterId})">取消</button>
+                <button class="btn btn-primary" id="savePoemBtn">保存</button>
+            `;
+
+            document.getElementById('savePoemBtn').addEventListener('click', async () => {
+                const newChapterId = parseInt(document.getElementById('editPoemChapter').value);
+                const newNumber = parseInt(document.getElementById('editPoemNumber').value) || 0;
+                const newTitle = document.getElementById('editPoemTitle').value.trim();
+                const newContent = document.getElementById('editPoemContent').value.trim();
+                const newDate = document.getElementById('editPoemDate').value.trim();
+                const newNote = document.getElementById('editPoemNote').value.trim();
+
+                if (!newTitle || !newContent) {
+                    showToast('请填写诗篇标题和内容');
+                    return;
+                }
+
+                try {
+                    const response = await fetch(getApiBaseUrl() + '/api/poems/edit', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            id: poemId, 
+                            chapterId: newChapterId, 
+                            number: newNumber, 
+                            title: newTitle, 
+                            content: newContent, 
+                            date: newDate, 
+                            note: newNote,
+                            ...adminCredentials 
+                        })
+                    });
+                    const result = await response.json();
+
+                    if (result.success) {
+                        showToast('诗篇更新成功');
+                        await loadData();
+                        showManagePoems(newChapterId);
+                    } else {
+                        showToast(result.error || '更新失败');
+                    }
+                } catch (error) {
+                    showToast('更新失败');
+                }
+            });
+        }
+
+        function initManageEvents() {
+            const closeBtn = document.getElementById('manageClose');
+            const backBtn = document.getElementById('manageBackBtn');
+
+            closeBtn.addEventListener('click', hideManageModal);
+            
+            document.getElementById('manageModal').addEventListener('click', (e) => {
+                if (e.target === e.currentTarget) hideManageModal();
+            });
+
+            backBtn.addEventListener('click', () => {
+                if (manageViewMode === 'poems') {
+                    renderManageChapters();
+                } else {
+                    hideManageModal();
+                }
+            });
+        }
+
+        async function loadData() {
+            try {
+                const response = await fetch(getApiBaseUrl() + '/json/lanpoetry/poems.json?t=' + Date.now());
+                poemsData = await response.json();
+                renderNavCards();
+                document.getElementById('siteTitle').textContent = poemsData.siteTitle || '在路上，奔赴诗的山海';
+            } catch (error) {
+                console.error('加载数据失败:', error);
+                showToast('加载数据失败，请刷新页面重试');
+            }
+        }
+
+        function renderNavCards() {
+            const container = document.getElementById('navCards');
+            const mainChapters = poemsData.chapters.filter(c => c.id !== 0 && c.id <= 3);
+            moreChaptersList = poemsData.chapters.filter(c => c.id > 3);
+
+            container.innerHTML = mainChapters.map(chapter => `
+                <div class="nav-card" data-chapter="${chapter.id}">
+                    <div class="nav-card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                        </svg>
+                    </div>
+                    <div class="nav-card-title">${chapter.title}</div>
+                </div>
+            `).join('') + `
+                <div class="nav-card" id="moreChapterCard">
+                    <div class="nav-card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="16"></line>
+                            <line x1="8" y1="12" x2="16" y2="12"></line>
+                        </svg>
+                    </div>
+                    <div class="nav-card-title">更多章节</div>
+                </div>
+            `;
+
+            container.querySelectorAll('.nav-card[data-chapter]').forEach(card => {
+                card.addEventListener('click', () => {
+                    const chapterId = parseInt(card.dataset.chapter);
+                    openChapter(chapterId);
+                });
+            });
+
+            document.getElementById('moreChapterCard').addEventListener('click', () => {
+                openMoreChapters();
+            });
+
+            document.getElementById('firstPoemEntry').addEventListener('click', () => {
+                openChapter(0);
+            });
+        }
+
+        function getChapterPoems(chapterId) {
+            let poems = poemsData.poems.filter(p => p.chapterId === chapterId);
+
+            poemsData.combinedPoems.forEach(combined => {
+                const indices = combined.poemIds.map(id => poems.findIndex(p => p.id === id));
+                if (indices.every(i => i !== -1)) {
+                    const firstIdx = Math.min(...indices);
+                    const combinedPoems = indices.map(i => poems[i]);
+                    poems = poems.filter((_, i) => !indices.includes(i));
+                    poems.splice(firstIdx, 0, {
+                        isCombined: true,
+                        poems: combinedPoems,
+                        number: combined.numbers.join('#'),
+                        title: combinedPoems.map(p => p.title).join(' / ')
+                    });
+                }
+            });
+
+            return poems;
+        }
+
+        function openChapter(chapterId) {
+            currentChapterId = chapterId;
+            isMoreChaptersMode = false;
+            chapterPoems = getChapterPoems(chapterId);
+            currentPoemIndex = 0;
+
+            if (chapterPoems.length === 0) {
+                showToast('该章节暂无诗篇');
+                return;
+            }
+
+            showPoem();
+            document.getElementById('poemModal').classList.add('active');
+        }
+
+        function openMoreChapters() {
+            isMoreChaptersMode = true;
+            currentChapterIndex = 0;
+
+            document.getElementById('poemChapter').textContent = '更多章节';
+
+            if (moreChaptersList.length === 0) {
+                document.getElementById('poemContent').innerHTML = `
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                        </svg>
+                        <span>暂无更多章节</span>
+                    </div>
+                `;
+                document.getElementById('poemFooter').innerHTML = '<span></span><span></span><span></span>';
+            } else {
+                showMoreChapter();
+            }
+
+            document.getElementById('poemModal').classList.add('active');
+        }
+
+        function showMoreChapter() {
+            const chapter = moreChaptersList[currentChapterIndex];
+            document.getElementById('poemChapter').textContent = chapter.title;
+
+            document.getElementById('poemContent').innerHTML = `
+                <div class="chapter-item" id="chapterItemClick">
+                    <div class="nav-card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                        </svg>
+                    </div>
+                    <div class="chapter-title">${chapter.title}</div>
+                </div>
+            `;
+
+            document.getElementById('poemFooter').innerHTML = `
+                <button class="poem-nav-btn" id="prevChapterBtn" ${currentChapterIndex === 0 ? 'disabled' : ''}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                    上一章节
+                </button>
+                <span></span>
+                <button class="poem-nav-btn" id="nextChapterBtn" ${currentChapterIndex === moreChaptersList.length - 1 ? 'disabled' : ''}>
+                    下一章节
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                </button>
+            `;
+
+            document.getElementById('chapterItemClick').addEventListener('click', () => {
+                document.getElementById('poemModal').classList.remove('active');
+                openChapter(chapter.id);
+            });
+
+            document.getElementById('prevChapterBtn').addEventListener('click', () => {
+                if (currentChapterIndex > 0) {
+                    currentChapterIndex--;
+                    showMoreChapter();
+                }
+            });
+
+            document.getElementById('nextChapterBtn').addEventListener('click', () => {
+                if (currentChapterIndex < moreChaptersList.length - 1) {
+                    currentChapterIndex++;
+                    showMoreChapter();
+                }
+            });
+        }
+
+        function showPoem() {
+            const poem = chapterPoems[currentPoemIndex];
+            const chapter = poemsData.chapters.find(c => c.id === currentChapterId);
+
+            document.getElementById('poemChapter').textContent = chapter.title;
+
+            let contentHtml = '';
+
+            if (poem.isCombined) {
+                poem.poems.forEach((p, idx) => {
+                    contentHtml += `
+                        <div class="poem-number">#${p.number}</div>
+                        <div class="poem-title">${escapeHtml(p.title)}</div>
+                        <div class="poem-body">${renderMarkdown(p.content)}</div>
+                        <div class="poem-meta">${p.date}${p.note ? ' · ' + p.note : ''}</div>
+                        ${idx < poem.poems.length - 1 ? '<hr style="margin: 32px 0;">' : ''}
+                    `;
+                });
+            } else {
+                contentHtml = `
+                    <div class="poem-number">#${poem.number}</div>
+                    <div class="poem-title">${escapeHtml(poem.title)}</div>
+                    <div class="poem-body">${renderMarkdown(poem.content)}</div>
+                    <div class="poem-meta">${poem.date}${poem.note ? ' · ' + poem.note : ''}</div>
+                `;
+            }
+
+            document.getElementById('poemContent').innerHTML = contentHtml;
+            document.getElementById('poemFooter').innerHTML = `
+                <button class="poem-nav-btn" id="prevPoem" ${currentPoemIndex === 0 ? 'disabled' : ''}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                    上一篇
+                </button>
+                <span class="poem-page-info">${currentPoemIndex + 1} / ${chapterPoems.length}</span>
+                <button class="poem-nav-btn" id="nextPoem" ${currentPoemIndex === chapterPoems.length - 1 ? 'disabled' : ''}>
+                    下一篇
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                </button>
+            `;
+
+            document.getElementById('prevPoem').addEventListener('click', () => {
+                if (currentPoemIndex > 0) {
+                    currentPoemIndex--;
+                    showPoem();
+                }
+            });
+
+            document.getElementById('nextPoem').addEventListener('click', () => {
+                if (currentPoemIndex < chapterPoems.length - 1) {
+                    currentPoemIndex++;
+                    showPoem();
+                }
+            });
+        }
+
+        function renderMarkdown(text) {
+            let html = escapeHtml(text);
+            html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+            html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+            html = html.replace(/^---$/gm, '<hr>');
+            return html;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        document.getElementById('poemClose').addEventListener('click', () => {
+            document.getElementById('poemModal').classList.remove('active');
+        });
+
+        document.getElementById('poemModal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                document.getElementById('poemModal').classList.remove('active');
+            }
+        });
+
+        document.getElementById('addPoemBtn').addEventListener('click', () => {
+            if (!isAdminLoggedIn) {
+                showAdminLoginModal();
+            } else {
+                showAddPoemModal();
+            }
+        });
+
+        function showAddPoemModal() {
+            if (!poemsData || !poemsData.chapters) {
+                showToast('数据未加载，请刷新页面');
+                return;
+            }
+            
+            const lastChapterId = localStorage.getItem('lastPoemChapterId');
+            const lastNumber = localStorage.getItem('lastPoemNumber') || '';
+            
+            const chapters = poemsData.chapters.filter(c => c.id !== 0);
+            const selectedIndex = lastChapterId ? chapters.findIndex(c => c.id === parseInt(lastChapterId)) : 0;
+            const selectedChapter = chapters[selectedIndex] || chapters[0];
+            
+            const chapterOptionsHtml = chapters.map((c, idx) => 
+                `<div class="form-select-option ${c.id === selectedChapter.id ? 'selected' : ''}" data-value="${c.id}">${c.title}</div>`
+            ).join('');
+            
+            document.getElementById('addPoemHeader').innerHTML = `
+                <div class="form-select-wrapper" id="chapterSelectWrapper">
+                    <div class="form-select-trigger" tabindex="0" id="chapterSelectTrigger">${selectedChapter?.title || '选择章节'}</div>
+                    <input type="hidden" id="newPoemChapter" value="${selectedChapter?.id || ''}">
+                    <div class="form-select-dropdown">${chapterOptionsHtml}</div>
+                </div>
+                <input type="number" id="newPoemNumber" placeholder="#" class="form-input-small" min="1" value="${lastNumber}">
+                <input type="text" id="newPoemTitle" placeholder="诗篇标题" class="form-input-header" style="flex:1;margin:0 12px;font-weight:600;">
+                <button class="poem-card-close" id="addPoemClose">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            `;
+            
+            document.getElementById('addPoemBody').innerHTML = `
+                <textarea id="newPoemContent" class="poem-textarea" placeholder="支持Markdown格式：## 标题、**粗体**、---分隔线"></textarea>
+            `;
+            
+            document.getElementById('addPoemFooter').innerHTML = `
+                <button class="manage-poems-btn" id="managePoemsBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                    管理诗篇
+                </button>
+                <input type="text" id="newPoemDate" placeholder="日期" class="form-input-footer">
+                <input type="text" id="newPoemNote" placeholder="备注" class="form-input-footer" style="width:140px;">
+                <button class="btn btn-primary" id="addPoemSubmit">保存诗篇</button>
+            `;
+
+            const wrapper = document.getElementById('chapterSelectWrapper');
+            const trigger = document.getElementById('chapterSelectTrigger');
+            const hiddenInput = document.getElementById('newPoemChapter');
+            
+            trigger.addEventListener('click', () => {
+                wrapper.classList.toggle('open');
+            });
+            
+            trigger.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    wrapper.classList.toggle('open');
+                }
+            });
+            
+            wrapper.querySelectorAll('.form-select-option').forEach(option => {
+                option.addEventListener('click', () => {
+                    wrapper.querySelectorAll('.form-select-option').forEach(o => o.classList.remove('selected'));
+                    option.classList.add('selected');
+                    trigger.textContent = option.textContent;
+                    hiddenInput.value = option.dataset.value;
+                    localStorage.setItem('lastPoemChapterId', option.dataset.value);
+                    wrapper.classList.remove('open');
+                });
+            });
+            
+            document.addEventListener('click', (e) => {
+                if (!wrapper.contains(e.target)) {
+                    wrapper.classList.remove('open');
+                }
+            });
+
+            document.getElementById('addPoemClose').addEventListener('click', () => {
+                document.getElementById('addPoemModal').classList.remove('active');
+            });
+
+            document.getElementById('managePoemsBtn').addEventListener('click', () => {
+                document.getElementById('addPoemModal').classList.remove('active');
+                showManageModal();
+            });
+
+            document.getElementById('addPoemSubmit').addEventListener('click', async () => {
+                const chapterId = parseInt(document.getElementById('newPoemChapter').value);
+                const number = parseInt(document.getElementById('newPoemNumber').value) || 0;
+                const title = document.getElementById('newPoemTitle').value.trim();
+                const content = document.getElementById('newPoemContent').value.trim();
+                const date = document.getElementById('newPoemDate').value.trim();
+                const note = document.getElementById('newPoemNote').value.trim();
+
+                if (!title || !content) {
+                    showToast('请填写诗篇标题和内容');
+                    return;
+                }
+
+                const submitBtn = document.getElementById('addPoemSubmit');
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="loading-spinner"></span>';
+
+                try {
+                    const response = await fetch(getApiBaseUrl() + '/api/poems', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ chapterId, number, title, content, date, note })
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        showToast('诗篇创建成功');
+                        localStorage.setItem('lastPoemNumber', (number + 1).toString());
+                        document.getElementById('addPoemModal').classList.remove('active');
+                        await loadData();
+                    } else {
+                        showToast(result.error || '创建失败');
+                    }
+                } catch (error) {
+                    console.error('创建失败:', error);
+                    showToast('创建失败，请检查服务器连接');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = '保存诗篇';
+                }
+            });
+
+            document.getElementById('addPoemModal').classList.add('active');
+        }
+
+        document.getElementById('addPoemModal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                document.getElementById('addPoemModal').classList.remove('active');
+            }
+        });
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (document.getElementById('poemModal').classList.contains('active')) {
+                if (e.key === 'ArrowLeft') {
+                    if (isMoreChaptersMode && currentChapterIndex > 0) {
+                        currentChapterIndex--;
+                        showMoreChapter();
+                    } else if (!isMoreChaptersMode && currentPoemIndex > 0) {
+                        currentPoemIndex--;
+                        showPoem();
+                    }
+                } else if (e.key === 'ArrowRight') {
+                    if (isMoreChaptersMode && currentChapterIndex < moreChaptersList.length - 1) {
+                        currentChapterIndex++;
+                        showMoreChapter();
+                    } else if (!isMoreChaptersMode && currentPoemIndex < chapterPoems.length - 1) {
+                        currentPoemIndex++;
+                        showPoem();
+                    }
+                } else if (e.key === 'Escape') {
+                    document.getElementById('poemModal').classList.remove('active');
+                }
+            }
+        });
+
+        // ============ Bing每日图片背景 ============
+        const BING_API = 'https://bing.biturl.top';
+        const BING_CACHE_KEY = 'bing_bg_cache';
+
+        /* 获取当前日期字符串（格式：YYYY-MM-DD） */
+        function getTodayDateString() {
+            const today = new Date();
+            return today.getFullYear() + '-' + 
+                   String(today.getMonth() + 1).padStart(2, '0') + '-' + 
+                   String(today.getDate()).padStart(2, '0');
+        }
+
+        async function initBingBackground() {
+            const bgImageEl = document.getElementById('bgImage');
+            if (!bgImageEl) return;
+            
+            const cached = getCachedBingImage();
+            if (cached) {
+                setBackgroundImage(bgImageEl, cached.url);
+            }
+            
+            try {
+                const response = await fetch(BING_API + '?t=' + Date.now());
+                if (!response.ok) throw new Error('获取Bing图片失败');
+                
+                const data = await response.json();
+                const imageUrl = data.url;
+                
+                if (imageUrl) {
+                    if (!cached || cached.url !== imageUrl) {
+                        cacheBingImage(imageUrl);
+                        setBackgroundImage(bgImageEl, imageUrl);
+                    }
+                }
+            } catch (error) {
+                console.error('获取Bing背景失败:', error);
+                if (!cached) {
+                    bgImageEl.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                    bgImageEl.classList.add('loaded');
+                }
+            }
+        }
+
+        function setBackgroundImage(el, url) {
+            const img = new Image();
+            img.onload = function() {
+                el.style.backgroundImage = `url('${url}')`;
+                el.classList.add('loaded');
+            };
+            img.onerror = function() {
+                el.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                el.classList.add('loaded');
+            };
+            img.src = url;
+        }
+
+        function getCachedBingImage() {
+            try {
+                const cached = localStorage.getItem(BING_CACHE_KEY);
+                if (!cached) return null;
+                
+                const data = JSON.parse(cached);
+                const today = getTodayDateString();
+                
+                if (data.date === today) {
+                    return data;
+                }
+                
+                return null;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function cacheBingImage(url) {
+            try {
+                localStorage.setItem(BING_CACHE_KEY, JSON.stringify({
+                    url: url,
+                    date: getTodayDateString()
+                }));
+            } catch (e) {
+                console.warn('缓存Bing图片失败:', e);
+            }
+        }
+
+        loadData();
+        initBingBackground();
+        initAdminLoginEvents();
+        initManageEvents();
+    </script>
+</body>
+</html>

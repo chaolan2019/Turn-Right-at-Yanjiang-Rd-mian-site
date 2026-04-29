@@ -1,0 +1,12 @@
+{
+  "name": "lanpoetry",
+  "version": "1.0.0",
+  "description": "诗歌网站 - 在路上，奔赴诗的山海",
+  "main": "js/server.js",
+  "scripts": {
+    "start": "node js/server.js"
+  },
+  "keywords": ["poetry", "poems"],
+  "author": "",
+  "license": "MIT"
+}

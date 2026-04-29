@@ -1,0 +1,33 @@
+{
+  "items": [
+    {
+      "id": 1774626447223,
+      "title": "GSManager",
+      "url": "https://gsmanager.yanjiangrd.site/",
+      "createdAt": 1774626447223
+    },
+    {
+      "id": 1773850225566,
+      "title": "STMCU中文官网",
+      "url": "https://www.stmcu.com.cn/",
+      "createdAt": 1773850225566
+    },
+    {
+      "id": 1773849768966,
+      "title": "VS Code Web",
+      "url": "https://vscode.dev/?vscode-lang=zh-cn",
+      "createdAt": 1773849768966
+    },
+    {
+      "id": 1773849751850,
+      "title": "Github Copilot",
+      "url": "https://github.com/copilot",
+      "createdAt": 1773849751850
+    }
+  ],
+  "metadata": {
+    "version": "1.0",
+    "lastUpdated": 1774626447223,
+    "totalItems": 4
+  }
+}
